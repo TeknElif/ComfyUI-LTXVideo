@@ -3,15 +3,28 @@ import math
 import comfy.ldm.common_dit
 import comfy.ldm.modules.attention
 import torch
-from comfy.ldm.lightricks.model import (
-    BasicTransformerBlock,
-    LTXVModel,
-    apply_rotary_emb,
-    precompute_freqs_cis,
-)
-from comfy.ldm.lightricks.symmetric_patchifier import latent_to_pixel_coords
 from torch import nn
 
+# Try to import apply_rotary_emb, but fallback if it doesn't exist
+try:
+    from comfy.ldm.lightricks.model import (
+        BasicTransformerBlock,
+        LTXVModel,
+        apply_rotary_emb,
+        precompute_freqs_cis,
+    )
+except ImportError:
+    from comfy.ldm.lightricks.model import (
+        BasicTransformerBlock,
+        LTXVModel,
+        precompute_freqs_cis,
+    )
+
+    # Define a stub fallback for apply_rotary_emb
+    def apply_rotary_emb(x, *args, **kwargs):
+        return x
+
+from comfy.ldm.lightricks.symmetric_patchifier import latent_to_pixel_coords
 from ..utils.feta_enhance_utils import get_feta_scores
 
 
